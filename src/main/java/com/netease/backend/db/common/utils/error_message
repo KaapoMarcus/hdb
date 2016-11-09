@@ -1,0 +1,71 @@
+#command package errors
+11001 = SQL Parse error. 
+11002 = Unsupported char found in SQL 
+11003 = Illegal SQL pattern, SQL must be one of SELECT,UPDATE,INSERT,DELETE types.
+11004 = Illegal Special char.
+11005 = Empty token.
+11006 = Illegal char found in decimal.
+11007 = Illegal escape char length.
+11008 = Illegal SQL token type.
+11009 = No "from" token found in "SELECT" command.
+11010 = Illegal identifier.
+11011 = Column count does not match.
+11012 = Table not found
+11013 = Distinct should work on "*" or field name.
+11014 = Sum(),Avg(),Max(),Min() should work on field name.
+11015 = There can't be more than one 'distinct' in sql.
+11016 = Invalid use of group by function.
+11017 = Unmatched ' or " or ` found.
+11018 = SQL can't be empty.
+11019 = Unsupported sql condition;
+11020 = Cross table query field not supported yet.
+11021 = Sub-condition connected by 'or' belongs to different tables.
+11022 = Columns in complex comparison (with operation) can only be in one table.
+11023 = Some expressions in condition do not belong to any tables that you specified.
+11024 = No join condition found in cross-table search.
+11025 = Alias not supported.
+11026 = DDB not found
+
+#Value package ERRORs
+12001 = Data convertion error.
+12002 = Unsupported data type.
+12003 = Invalid number format.
+12004 = Number value out of range.
+12005 = Divide by zero.
+12006 = Invalid date format.
+12007 = Invalid time format.
+12008 = Invalid timestamp format.
+12009 = Null value can't compare to date value.
+
+#Expression package ERRORS
+13001 = Unsupported agg type.
+13002 = 'Like' expression escape error.
+13003 = illegal comparison operation with value null.
+13004 = Ambiguous column name.
+13005 = Column does not exist
+13006 = 
+13007 = 
+
+#Utils package ERRORs
+14001 = Hex string odd.
+14002 = Hex string wrong.
+
+#table package errors
+15001 = Table does not exist
+15002 = Column does not exist
+
+#plan package errors
+1062 = Duplicate record.
+16002 = Unsupported sql comparison type in having clause.
+
+#result package errors
+17001 = Unsupported sql type.
+
+#operation conflict
+18001 = Operation conflicts with data migration.
+
+#Common Exception
+19001 = DDB has been shutdown.
+
+#Routine package errors
+20001 = Routine does not exist

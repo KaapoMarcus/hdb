@@ -1,0 +1,55 @@
+create_table====create table if not exists <tab_name> (
+<col_def_str>
+) CHARSET=utf8
+;;;;
+
+drop_table====drop table if exists <tab_name>
+;;;;
+
+q0====
+select USER_ID,COME_FROM from user_info_etc where COME_FROM='APP' order by  USER_ID;
+;;;;
+
+q1====select ID,EMAIL from user_info 
+union 
+select USER_ID,COME_FROM from user_info_etc
+;;;;
+
+
+q2====
+select a.id , a.EMAIL , a.tel ,b.REGISTER_DATE,b.BIRTHDAY
+ from user_info a left join user_info_etc b 
+on ( a.id=b.user_id and a.enable=1 and a.is_fake=0  )  order by b.REGISTER_DATE desc 
+;;;;
+
+q3====
+SELECT
+	t11.ID,
+	t11.GMT_CREATE,
+	t12.COME_FROM
+FROM
+	(
+		SELECT
+			t1.ID,
+			t1.GMT_CREATE
+		FROM
+			(
+				SELECT
+					ID,
+					GMT_CREATE
+				FROM
+					USER .user_info ui
+				WHERE
+					GMT_CREATE >= '2015-11-01 00:00:00'
+				AND GMT_CREATE <= '2015-11-06 23:59:59'
+			AND IS_FAKE = 0
+		AND ENABLE = 1
+			)t1
+		LEFT OUTER JOIN USER .user_r_fanli t2 ON(t1.ID = t2.USER_ID)
+	WHERE
+		t2.USER_ID IS NULL
+	)t11
+INNER JOIN USER .user_info_etc t12 ON(t11.ID = t12.USER_ID)
+ORDER BY
+	t11.GMT_CREATE
+	;;;;
