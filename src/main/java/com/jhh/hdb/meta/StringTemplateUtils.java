@@ -12,7 +12,7 @@ public class StringTemplateUtils {
 	static {
 
 		String user_dir = System.getProperty("user.dir");
-		String filename = user_dir + "\\src\\com\\mydb\\stringtemplate.txt";
+		String filename = user_dir + "\\stringtemplate.txt";
 
 		File file = new File(filename);
 		FileReader fr;

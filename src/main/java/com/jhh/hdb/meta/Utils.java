@@ -30,7 +30,7 @@ public class Utils {
 	static DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
 	static DateFormat datetimeformat = new SimpleDateFormat(
 			"yyyy-MM-dd_HH:mm:ss");
-	// 1 �ո� 2 ���� 3 |
+	// 
 	public static String OK = "OK";
 	public static String FAILED = "FAILED";
 	public static String COMMA = ",";
@@ -1019,10 +1019,9 @@ public class Utils {
 	public static long str2long(byte[] bytes) {
 
 		long value = 0;
-		// 由高位到低位
 		for (int i = 0; i < 4; i++) {
 			int shift = (4 - 1 - i) * 8;
-			value += (bytes[i] & 0x000000FF) << shift;// �??高位�??
+			value += (bytes[i] & 0x000000FF) << shift;
 		}
 		return value;
 	}

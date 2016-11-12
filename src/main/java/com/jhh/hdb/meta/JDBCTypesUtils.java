@@ -12,10 +12,10 @@ import java.util.TreeMap;
 
 public class JDBCTypesUtils {
 
-	private static Map<String, Integer> name2value_map; // Name to value
-	private static Map<Integer, String> value2name_map; // value to Name
-	private static Map<Integer, Class<?>> value2javaclass_map; // jdbc type to java
-															// type
+	private static Map<String, Integer> name2value_map; 
+	private static Map<Integer, String> value2name_map; 
+	private static Map<Integer, Class<?>> value2javaclass_map; 
+															
 	static {
 		name2value_map = new TreeMap<String, Integer>();
 		value2name_map = new TreeMap<Integer, String>();
@@ -34,47 +34,47 @@ public class JDBCTypesUtils {
 				}
 			}
 		}
-		// 初始化jdbcJavaTypes�?
-		value2javaclass_map.put(new Integer(Types.LONGNVARCHAR), String.class); // -16
-																			// 字符�?
-		value2javaclass_map.put(new Integer(Types.NCHAR), String.class); // -15 字符�?
-		value2javaclass_map.put(new Integer(Types.NVARCHAR), String.class); // -9 字符�?
-		value2javaclass_map.put(new Integer(Types.ROWID), String.class); // -8 字符�?
-		value2javaclass_map.put(new Integer(Types.BIT), Boolean.class); // -7 布尔
-		value2javaclass_map.put(new Integer(Types.TINYINT), Byte.class); // -6 数字
-		value2javaclass_map.put(new Integer(Types.BIGINT), Long.class); // -5 数字
-		value2javaclass_map.put(new Integer(Types.LONGVARBINARY), Blob.class); // -4
-																			// 二进�?
-		value2javaclass_map.put(new Integer(Types.VARBINARY), Blob.class); // -3 二进�?
-		value2javaclass_map.put(new Integer(Types.BINARY), Blob.class); // -2 二进�?
-		value2javaclass_map.put(new Integer(Types.LONGVARCHAR), String.class); // -1
-																			// 字符�?
-		// jdbcJavaTypes.put(new Integer(Types.NULL), String.class); // 0 /
-		value2javaclass_map.put(new Integer(Types.CHAR), String.class); // 1 字符�?
-		value2javaclass_map.put(new Integer(Types.NUMERIC), BigDecimal.class); // 2 数字
-		value2javaclass_map.put(new Integer(Types.DECIMAL), BigDecimal.class); // 3 数字
-		value2javaclass_map.put(new Integer(Types.INTEGER), Integer.class); // 4 数字
-		value2javaclass_map.put(new Integer(Types.SMALLINT), Short.class); // 5 数字
-		value2javaclass_map.put(new Integer(Types.FLOAT), BigDecimal.class); // 6 数字
-		value2javaclass_map.put(new Integer(Types.REAL), BigDecimal.class); // 7 数字
-		value2javaclass_map.put(new Integer(Types.DOUBLE), BigDecimal.class); // 8 数字
-		value2javaclass_map.put(new Integer(Types.VARCHAR), String.class); // 12 字符�?
-		value2javaclass_map.put(new Integer(Types.BOOLEAN), Boolean.class); // 16 布尔
-		// jdbcJavaTypes.put(new Integer(Types.DATALINK), String.class); // 70 /
-		value2javaclass_map.put(new Integer(Types.DATE), Date.class); // 91 日期
-		value2javaclass_map.put(new Integer(Types.TIME), Date.class); // 92 日期
-		value2javaclass_map.put(new Integer(Types.TIMESTAMP), Date.class); // 93 日期
-		value2javaclass_map.put(new Integer(Types.OTHER), Object.class); // 1111 其他类型�?
+		
+		value2javaclass_map.put(new Integer(Types.LONGNVARCHAR), String.class); 
+																			
+		value2javaclass_map.put(new Integer(Types.NCHAR), String.class); 
+		value2javaclass_map.put(new Integer(Types.NVARCHAR), String.class); 
+		value2javaclass_map.put(new Integer(Types.ROWID), String.class); 
+		value2javaclass_map.put(new Integer(Types.BIT), Boolean.class); 
+		value2javaclass_map.put(new Integer(Types.TINYINT), Byte.class); 
+		value2javaclass_map.put(new Integer(Types.BIGINT), Long.class); 
+		value2javaclass_map.put(new Integer(Types.LONGVARBINARY), Blob.class); 
+																			
+		value2javaclass_map.put(new Integer(Types.VARBINARY), Blob.class); 
+		value2javaclass_map.put(new Integer(Types.BINARY), Blob.class); 
+		value2javaclass_map.put(new Integer(Types.LONGVARCHAR), String.class); 
+																			
+		
+		value2javaclass_map.put(new Integer(Types.CHAR), String.class); 
+		value2javaclass_map.put(new Integer(Types.NUMERIC), BigDecimal.class); 
+		value2javaclass_map.put(new Integer(Types.DECIMAL), BigDecimal.class); 
+		value2javaclass_map.put(new Integer(Types.INTEGER), Integer.class); 
+		value2javaclass_map.put(new Integer(Types.SMALLINT), Short.class); 
+		value2javaclass_map.put(new Integer(Types.FLOAT), BigDecimal.class); 
+		value2javaclass_map.put(new Integer(Types.REAL), BigDecimal.class); 
+		value2javaclass_map.put(new Integer(Types.DOUBLE), BigDecimal.class); 
+		value2javaclass_map.put(new Integer(Types.VARCHAR), String.class); 
+		value2javaclass_map.put(new Integer(Types.BOOLEAN), Boolean.class); 
+		// jdbcJavaTypes.put(new Integer(Types.DATALINK), String.class); 
+		value2javaclass_map.put(new Integer(Types.DATE), Date.class); 
+		value2javaclass_map.put(new Integer(Types.TIME), Date.class); 
+		value2javaclass_map.put(new Integer(Types.TIMESTAMP), Date.class); 
+		value2javaclass_map.put(new Integer(Types.OTHER), Object.class); 
 		// jdbcJavaTypes.put(new Integer(Types.JAVA_OBJECT), Object.class); //
-		// 2000
+		
 		// jdbcJavaTypes.put(new Integer(Types.DISTINCT), String.class); // 2001
 		// jdbcJavaTypes.put(new Integer(Types.STRUCT), String.class); // 2002
 		// jdbcJavaTypes.put(new Integer(Types.ARRAY), String.class); // 2003
-		value2javaclass_map.put(new Integer(Types.BLOB), Blob.class); // 2004 二进�?
-		value2javaclass_map.put(new Integer(Types.CLOB), Clob.class); // 2005 大文�?
+		value2javaclass_map.put(new Integer(Types.BLOB), Blob.class); 
+		value2javaclass_map.put(new Integer(Types.CLOB), Clob.class); 
 		// jdbcJavaTypes.put(new Integer(Types.REF), String.class); // 2006
 		// jdbcJavaTypes.put(new Integer(Types.SQLXML), String.class); // 2009
-		value2javaclass_map.put(new Integer(Types.NCLOB), Clob.class); // 2011 大文�?
+		value2javaclass_map.put(new Integer(Types.NCLOB), Clob.class); 
 	}
 
 	public static int getJdbcCode(String jdbcName) {
