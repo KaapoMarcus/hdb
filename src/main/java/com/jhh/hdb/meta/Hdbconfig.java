@@ -2,23 +2,17 @@ package com.jhh.hdb.meta;
 
 public class Hdbconfig {
 
-	public Integer config_id;
 	public String config_name;
-	
 	public String config_type;
 	public String config_value;
-	public Hdbconfig(Integer config_id, String config_name, String config_type, String config_value) {
+	public Hdbconfig() {
 		super();
-		this.config_id = config_id;
+	}
+	public Hdbconfig(String config_name, String config_type, String config_value) {
+		super();
 		this.config_name = config_name;
 		this.config_type = config_type;
 		this.config_value = config_value;
-	}
-	public Integer getConfig_id() {
-		return config_id;
-	}
-	public void setConfig_id(Integer config_id) {
-		this.config_id = config_id;
 	}
 	public String getConfig_name() {
 		return config_name;
@@ -38,5 +32,4 @@ public class Hdbconfig {
 	public void setConfig_value(String config_value) {
 		this.config_value = config_value;
 	}
-
 }

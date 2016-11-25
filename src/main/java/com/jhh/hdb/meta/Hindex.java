@@ -1,57 +1,42 @@
 package com.jhh.hdb.meta;
 
 public class Hindex {
-
-	public Integer hindex_id;
-	public Integer htable_id;
-	public Integer hindex_type;
-	
+	public String hdb_name;
+	public String htable_name;
 	public String hindex_name;
-
+	public String hindex_type;
 	public Hindex() {
 		super();
 	}
-
-	public Hindex(Integer hindex_id, Integer htable_id, Integer hindex_type, String hindex_name) {
+	public Hindex(String hdb_name, String htable_name, String hindex_name, String hindex_type) {
 		super();
-		this.hindex_id = hindex_id;
-		this.htable_id = htable_id;
-		this.hindex_type = hindex_type;
+		this.hdb_name = hdb_name;
+		this.htable_name = htable_name;
 		this.hindex_name = hindex_name;
-	}
-
-	public Integer getHindex_id() {
-		return hindex_id;
-	}
-
-	public void setHindex_id(Integer hindex_id) {
-		this.hindex_id = hindex_id;
-	}
-
-	public Integer getHtable_id() {
-		return htable_id;
-	}
-
-	public void setHtable_id(Integer htable_id) {
-		this.htable_id = htable_id;
-	}
-
-	public Integer getHindex_type() {
-		return hindex_type;
-	}
-
-	public void setHindex_type(Integer hindex_type) {
 		this.hindex_type = hindex_type;
 	}
-
+	public String getHdb_name() {
+		return hdb_name;
+	}
+	public void setHdb_name(String hdb_name) {
+		this.hdb_name = hdb_name;
+	}
+	public String getHtable_name() {
+		return htable_name;
+	}
+	public void setHtable_name(String htable_name) {
+		this.htable_name = htable_name;
+	}
 	public String getHindex_name() {
 		return hindex_name;
 	}
-
 	public void setHindex_name(String hindex_name) {
 		this.hindex_name = hindex_name;
 	}
-	
-	
-
+	public String getHindex_type() {
+		return hindex_type;
+	}
+	public void setHindex_type(String hindex_type) {
+		this.hindex_type = hindex_type;
+	}
 }

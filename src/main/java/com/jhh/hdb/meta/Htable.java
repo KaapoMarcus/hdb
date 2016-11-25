@@ -1,23 +1,24 @@
 package com.jhh.hdb.meta;
 
 public class Htable {
-
-	public Integer htable_id;
+	public String hdb_name;
 	public String htable_name;
-	public Integer hdb_id;
-	public Integer hdp_id;
-	public Htable(Integer htable_id, String htable_name, Integer hdb_id, Integer hdp_id) {
+	public String hdp_name;
+	public Htable() {
 		super();
-		this.htable_id = htable_id;
+		// TODO Auto-generated constructor stub
+	}
+	public Htable(String hdb_name, String htable_name, String hdp_name) {
+		super();
+		this.hdb_name = hdb_name;
 		this.htable_name = htable_name;
-		this.hdb_id = hdb_id;
-		this.hdp_id = hdp_id;
+		this.hdp_name = hdp_name;
 	}
-	public Integer getHtable_id() {
-		return htable_id;
+	public String getHdb_name() {
+		return hdb_name;
 	}
-	public void setHtable_id(Integer htable_id) {
-		this.htable_id = htable_id;
+	public void setHdb_name(String hdb_name) {
+		this.hdb_name = hdb_name;
 	}
 	public String getHtable_name() {
 		return htable_name;
@@ -25,17 +26,11 @@ public class Htable {
 	public void setHtable_name(String htable_name) {
 		this.htable_name = htable_name;
 	}
-	public Integer getHdb_id() {
-		return hdb_id;
+	public String getHdp_name() {
+		return hdp_name;
 	}
-	public void setHdb_id(Integer hdb_id) {
-		this.hdb_id = hdb_id;
-	}
-	public Integer getHdp_id() {
-		return hdp_id;
-	}
-	public void setHdp_id(Integer hdp_id) {
-		this.hdp_id = hdp_id;
+	public void setHdp_name(String hdp_name) {
+		this.hdp_name = hdp_name;
 	}
 
 }

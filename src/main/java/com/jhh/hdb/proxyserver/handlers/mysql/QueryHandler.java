@@ -7,7 +7,7 @@ import com.jhh.hdb.proxyserver.handlers.sql.SQLExecutor;
 import com.jhh.hdb.proxyserver.handlers.sql.SQLExecutorFactory;
 import com.jhh.hdb.proxyserver.handlers.sql.SQLExecutorFactoryImpl;
 import com.jhh.hdb.proxyserver.session.SessionContext;
-import com.test.stats.sql.Main;
+import com.jhh.hdb.sql.Main;
 
 /**
  * �������з�preparestatement��sql���

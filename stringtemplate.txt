@@ -1,3 +1,86 @@
+
+
+
+test_select_1====
+select a.ubirthday ,count(1) login_count, count(distinct a.uid) uid_count, 
+min(b.ulogindatetime) mindatetime , max(b.ulogindatetime) maxdatetime
+ from uinfo a join ulogin b 
+on ( a.uid=b.uid and b.ulogindatetime like '2016-10-%' )  
+group by a.ubirthday
+having login_count>1
+order by uid_count  desc 
+;;;;
+
+test_select_1====
+select a.* , b.* , c.*
+ from uinfo a , ulogin b , ubank c
+where  a.uid=b.uid and a.uid=c.uid 
+and b.ulogindatetime like '2016-10-%' and c.ucardbank='zhongguo'
+
+;;;;
+
+test_select_1====
+select a.uid , a.uname , a.ubirthday ,b.uloginip , b.ulogindatetime
+ from uinfo a left join ulogin b 
+on ( a.uid=b.uid and b.ulogindatetime like '2016-10-%' )  
+;;;;
+
+
+
+test_select_1====
+select ubirthday , v 
+from 
+(
+ select ubirthday , count(uid) v
+ from uinfo 
+ where uid%4<2 
+ group by ubirthday
+) t where v>=2
+  order by v desc
+;;;;
+
+
+test_select_1====
+ select ubirthday ,uname ,count(uid) v , sum(1) sumx
+ from uinfo 
+ where uid in (12,13,30,31)  and uname like '%j%' or uid >=50 and uid<100 and ubirthday like '2016-10-%'
+ group by ubirthday,uname
+ having v>=2
+ order by v asc , sumx desc
+;;;;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 create_table====create table if not exists <tab_name> (
 <col_def_str>
 ) CHARSET=utf8
@@ -55,13 +138,20 @@ ORDER BY
 	;;;;
 	
 	q_create_database====
-CREATE Database hdb11  
-/*+ nodeinstance_arr=jdbc:mysql://10.199.134.41:3306,jdbc:mysql://10.199.134.42:3306 */  
+CREATE Database mytesthdb2 
+/*+ nodeinstance_arr=jdbc:mysql://10.199.134.41:3306/mytesthdb2_0,jdbc:mysql://10.199.134.41:3306/mytesthdb2_1,jdbc:mysql://10.199.134.42:3306/mytesthdb2_2,jdbc:mysql://10.199.134.42:3306/mytesthdb2_3 */  
 CHARACTER SET utf8 
 ;;;;
 
+
+q_create_hdp====
+create  hdp  hdp2  type  range  algo  singleint  min  0  max  1000000  step  10000
+;;;;
+
+
+
 q_create_table_1====
-CREATE  /*+ hdp=hdp0 hdc=uid */ TABLE hdb11.uinfo (
+CREATE  /*+ hdp=hdp2 hdc=uid */ TABLE mytesthdb2.uinfo (
   uid int NOT NULL,
   uname varchar(32) NOT NULL DEFAULT '',
   ubirthday date NOT NULL DEFAULT '1970-01-01',
@@ -72,18 +162,18 @@ CREATE  /*+ hdp=hdp0 hdc=uid */ TABLE hdb11.uinfo (
 ;;;;
 
 q_create_table_2====
-CREATE  /*+ hdp=hdp0 hdc=uid */ TABLE hdb11.ulogin (
+CREATE  /*+ hdp=hdp2 hdc=uid */ TABLE mytesthdb2.ulogin (
   uid int NOT NULL ,
   uloginip varchar(32) NOT NULL DEFAULT '',
   ulogindatetime datetime NOT NULL DEFAULT '1970-01-01',
   PRIMARY KEY (uid,ulogindatetime),
-  UNIQUE KEY uloginip (uloginip),
+  KEY uloginip (uloginip),
   KEY ulogindatetime (ulogindatetime)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 
 ;;;;
 
 q_create_table_3====
-CREATE  /*+ hdp=hdp0 hdc=uid */ TABLE hdb11.ubank (
+CREATE  /*+ hdp=hdp2 hdc=uid */ TABLE mytesthdb2.ubank (
   uid int NOT NULL ,
   ucardbank varchar(32) NOT NULL DEFAULT '',
   ucardno varchar(32) NOT NULL DEFAULT '',
@@ -91,4 +181,64 @@ CREATE  /*+ hdp=hdp0 hdc=uid */ TABLE hdb11.ubank (
   UNIQUE KEY ucardno (ucardno)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 
 ;;;;
+
+q_insert_uinfo====
+insert into mytesthdb2.uinfo (uid,uname,ubirthday) values
+(100,'jack','1986-01-01'),
+(120,'pony','1987-01-01'),
+(121,'trump','1988-01-01'),
+(122,'cliton','1989-01-01')
+;;;;
+
+q_replace_uinfo====
+replace into mytesthdb2.uinfo (uid,uname,ubirthday) values
+(4,'jhh','1986-01-01'),
+(5,'zhangzc','1987-01-01'),
+(6,'huanglq','1988-01-01'),
+
+(31,'jack','1986-01-01'),
+(32,'pony','1987-01-01'),
+(33,'trump','1988-01-01'),
+
+(60,'zhangx','1986-01-01'),
+(68,'songx','1987-01-01'),
+(69,'liuqx','1988-01-01'),
+(70,'fengzb','1989-01-01')
+;;;;
+
+q_delete_uinfo====
+delete from mytesthdb2.uinfo where uid>=0  
+;;;;
+q_delete_ulogin====
+delete from mytesthdb2.ulogin where uid>=0  
+;;;;
+q_delete_ubank====
+delete from mytesthdb2.ubank where uid>=0  
+;;;;
+
+q_simpleselect_uinfo====
+select * from mytesthdb2.uinfo where uid>=0 
+;;;;
+q_simpleselect_ulogin====
+select * from mytesthdb2.ulogin where uid>=0 
+;;;;
+q_simpleselect_ubank====
+select * from mytesthdb2.ubank where uid>=0 
+;;;;
+
+q_load_uinfo====
+load data local infile 'D:/tmp/uinfo.txt' replace into table mytesthdb2.uinfo FIELDS TERMINATED BY ',' LINES TERMINATED BY '\r\n' (uid,uname,ubirthday) 
+;;;;
+
+q_load_ulogin====
+load data local infile 'D:/tmp/ulogin.txt' replace into table mytesthdb2.ulogin FIELDS TERMINATED BY ',' LINES TERMINATED BY '\r\n' (uid,uloginip,ulogindatetime) 
+;;;;
+
+q_load_ubank====
+load data local infile 'D:/tmp/ubank.txt' replace into table mytesthdb2.ubank FIELDS TERMINATED BY ',' LINES TERMINATED BY '\r\n' (uid,ucardbank,ucardno) 
+;;;;
+
+
+
+
 
