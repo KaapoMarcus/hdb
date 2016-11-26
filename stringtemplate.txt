@@ -43,15 +43,29 @@ from
 test_select_1====
  select ubirthday ,uname ,count(uid) v , sum(1) sumx
  from uinfo 
- where uid in (12,13,30,31)  and uname like '%j%' or uid >=50 and uid<100 and ubirthday like '2016-10-%'
+ where uid in (12,13,30,31)  and uname like '%j%' or uid >=50 and uid<100 or ubirthday like '2016-10-%'
  group by ubirthday,uname
  having v>=2
  order by v asc , sumx desc
 ;;;;
 
 
+test_select_1====
 
+ select  uid ,uname,ubirthday 
+ from uinfo 
+ where uid in (10,11,12,13) and uname like '%j%' and ubirthday like '2016-10-%' 
+ or uid >=50 and uid<100 
+ or ubirthday like '2016-10-%'
+;;;;
 
+test_select_1====
+
+ select  uid ,uname,ubirthday 
+ from uinfo 
+ where  uid=100 and uid not in (1,2) and uname like '%j%'
+
+;;;;
 
 
 
@@ -144,14 +158,24 @@ CHARACTER SET utf8
 ;;;;
 
 
-q_create_hdp====
-create  hdp  hdp2  type  range  algo  singleint  min  0  max  1000000  step  10000
+q_drop_table_uinfo====
+drop table mytesthdb2.uinfo
+;;;;
+q_drop_table_ulogin====
+drop table mytesthdb2.ulogin
+;;;;
+q_drop_table_ubank====
+drop table mytesthdb2.ubank
+;;;;
+
+q_create_hdp_hdp1====
+create  hdp  hdp1  type  range  algo  singleint  min  0  max  400  step  100
 ;;;;
 
 
 
-q_create_table_1====
-CREATE  /*+ hdp=hdp2 hdc=uid */ TABLE mytesthdb2.uinfo (
+q_create_table_uinfo====
+CREATE  /*+ hdp=hdp1 hdc=uid */ TABLE mytesthdb2.uinfo (
   uid int NOT NULL,
   uname varchar(32) NOT NULL DEFAULT '',
   ubirthday date NOT NULL DEFAULT '1970-01-01',
@@ -161,8 +185,8 @@ CREATE  /*+ hdp=hdp2 hdc=uid */ TABLE mytesthdb2.uinfo (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 ;;;;
 
-q_create_table_2====
-CREATE  /*+ hdp=hdp2 hdc=uid */ TABLE mytesthdb2.ulogin (
+q_create_table_ulogin====
+CREATE  /*+ hdp=hdp1 hdc=uid */ TABLE mytesthdb2.ulogin (
   uid int NOT NULL ,
   uloginip varchar(32) NOT NULL DEFAULT '',
   ulogindatetime datetime NOT NULL DEFAULT '1970-01-01',
@@ -172,8 +196,8 @@ CREATE  /*+ hdp=hdp2 hdc=uid */ TABLE mytesthdb2.ulogin (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 
 ;;;;
 
-q_create_table_3====
-CREATE  /*+ hdp=hdp2 hdc=uid */ TABLE mytesthdb2.ubank (
+q_create_table_ubank====
+CREATE  /*+ hdp=hdp1 hdc=uid */ TABLE mytesthdb2.ubank (
   uid int NOT NULL ,
   ucardbank varchar(32) NOT NULL DEFAULT '',
   ucardno varchar(32) NOT NULL DEFAULT '',

@@ -32,9 +32,13 @@ import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
+import com.alibaba.druid.sql.ast.expr.SQLInListExpr;
 import com.alibaba.druid.sql.ast.expr.SQLLiteralExpr;
+import com.alibaba.druid.sql.ast.expr.SQLNotExpr;
+import com.alibaba.druid.sql.ast.expr.SQLNullExpr;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
 import com.alibaba.druid.sql.ast.statement.SQLCreateDatabaseStatement;
+import com.alibaba.druid.sql.ast.statement.SQLDropTableStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement.ValuesClause;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
@@ -58,7 +62,6 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlReplaceStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.Limit;
 import com.alibaba.druid.util.JdbcUtils;
-import com.jhh.hdb.sql.SqlType;
 
 @SuppressWarnings("rawtypes")
 public class Test {
@@ -80,13 +83,31 @@ public class Test {
 		metadata.getConnection();
 		String sql;
 
-		sql = StringTemplateUtils.read_stat("q_delete_uinfo");
-		test_delete_htable(sql);
-		sql = StringTemplateUtils.read_stat("q_delete_ulogin");
-		test_delete_htable(sql);
-		sql = StringTemplateUtils.read_stat("q_delete_ubank");
-		test_delete_htable(sql);
+		// sql = StringTemplateUtils.read_stat("q_drop_table_uinfo");
+		// test_drop_table(sql);
+		// sql = StringTemplateUtils.read_stat("q_drop_table_ulogin");
+		// test_drop_table(sql);
+		// sql = StringTemplateUtils.read_stat("q_drop_table_ubank");
+		// test_drop_table(sql);
+		//
+		// sql = StringTemplateUtils.read_stat("q_create_hdp_hdp1");
+		// test_create_hdp(sql);
+		//
+		// sql = StringTemplateUtils.read_stat("q_create_table_uinfo");
+		// test_create_table(sql);
+		// sql = StringTemplateUtils.read_stat("q_create_table_ulogin");
+		// test_create_table(sql);
+		// sql = StringTemplateUtils.read_stat("q_create_table_ubank");
+		// test_create_table(sql);
 
+		//
+		// sql = StringTemplateUtils.read_stat("q_delete_uinfo");
+		// test_delete_htable(sql);
+		// sql = StringTemplateUtils.read_stat("q_delete_ulogin");
+		// test_delete_htable(sql);
+		// sql = StringTemplateUtils.read_stat("q_delete_ubank");
+		// test_delete_htable(sql);
+		//
 		// sql = StringTemplateUtils.read_stat("q_simpleselect_uinfo");
 		// test_simpleselect_htable(sql);
 		// sql = StringTemplateUtils.read_stat("q_simpleselect_ulogin");
@@ -94,28 +115,25 @@ public class Test {
 		// sql = StringTemplateUtils.read_stat("q_simpleselect_ubank");
 		// test_simpleselect_htable(sql);
 
-		sql = StringTemplateUtils.read_stat("q_load_uinfo");
-		test_load_htable(sql);
-		sql = StringTemplateUtils.read_stat("q_load_ulogin");
-		test_load_htable(sql);
-		sql = StringTemplateUtils.read_stat("q_load_ubank");
-		test_load_htable(sql);
+		// sql = StringTemplateUtils.read_stat("q_load_uinfo");
+		// test_load_htable(sql);
+		// sql = StringTemplateUtils.read_stat("q_load_ulogin");
+		// test_load_htable(sql);
+		// sql = StringTemplateUtils.read_stat("q_load_ubank");
+		// test_load_htable(sql);
+		//
+		// sql = StringTemplateUtils.read_stat("q_simpleselect_uinfo");
+		// test_simpleselect_htable(sql);
+		// sql = StringTemplateUtils.read_stat("q_simpleselect_ulogin");
+		// test_simpleselect_htable(sql);
+		// sql = StringTemplateUtils.read_stat("q_simpleselect_ubank");
+		// test_simpleselect_htable(sql);
 
-		// sql = StringTemplateUtils.read_stat("test_select_1");
-		// test_select(sql);
+		sql = StringTemplateUtils.read_stat("test_select_1");
+		test_select(sql);
 
 		// sql = StringTemplateUtils.read_stat("q_create_database");
 		// test_create_hdb(sql);
-
-		// sql = StringTemplateUtils.read_stat("q_create_hdp");
-		// test_create_hdp(sql);
-
-		// sql = StringTemplateUtils.read_stat("q_create_table_1");
-		// test_create_table(sql);
-		// sql = StringTemplateUtils.read_stat("q_create_table_2");
-		// test_create_table(sql);
-		// sql = StringTemplateUtils.read_stat("q_create_table_3");
-		// test_create_table(sql);
 
 		// sql = StringTemplateUtils.read_stat("q_replace_uinfo");
 		// test_replace_htable(sql);
@@ -767,24 +785,7 @@ public class Test {
 				Map hdc_list_by_htable = metadata.get_hdc_list_by_htable(hdb_name, htable_name);
 				Hdp table_hdp = metadata.get_hdp_by_htable(hdb_name, htable_name);
 
-				// 判读where中是否包含 hdc的信息,以便发送到指定的节点
-				SQLBinaryOpExpr var_where = (SQLBinaryOpExpr) where;
-				SQLBinaryOperator binop = var_where.getOperator();
-
-				while (binop.isLogical()) {
-					SQLExpr left = var_where.getLeft();
-					SQLExpr right = var_where.getRight();
-				}
-				if (binop.isLogical()) {
-
-				} else if (binop.isRelational()) {
-					SQLExpr left = var_where.getLeft();
-					SQLExpr right = var_where.getRight();
-					String left_str = left.toString();
-					String right_str = left.toString();
-				} else {
-
-				}
+				parse_where(where);
 
 				// 判读 group by 和 order by 是否包含 hdc , 以便可以直接到节点上执行,无需mapreduce
 
@@ -916,6 +917,232 @@ public class Test {
 			// exec.shutdown();
 		}
 
+	}
+
+	private static void parse_where(SQLExpr where) {
+		// 判读where中是否包含 hdc的信息,以便发送到指定的节点
+
+		if (where instanceof SQLInListExpr) {
+			SQLInListExpr top_expr = (SQLInListExpr) where;
+			boolean isnot = top_expr.isNot();
+			List<SQLExpr> target_list = top_expr.getTargetList();
+			return;
+		}
+		if (where instanceof SQLBinaryOpExpr) {
+
+			SQLBinaryOpExpr top_expr = (SQLBinaryOpExpr) where;
+			SQLBinaryOperator top_op = top_expr.getOperator();
+
+			if (top_op == SQLBinaryOperator.BooleanOr) {
+
+				Map<Integer, SQLExpr> or_map = new HashMap<Integer, SQLExpr>();
+				Map<Integer, Map<Integer, SQLExpr>> and_map = new HashMap<Integer, Map<Integer, SQLExpr>>();
+
+				int or_idx = 0;
+				SQLBinaryOpExpr or_left = top_expr;
+				SQLBinaryOpExpr or_right;
+
+				SQLBinaryOperator or_left_op = top_op;
+				SQLBinaryOperator or_right_op;
+
+				boolean leftisin = false;
+				while (or_left_op == SQLBinaryOperator.BooleanOr) {
+
+					if (or_left.getRight() instanceof SQLBinaryOpExpr) {
+						or_right = (SQLBinaryOpExpr) or_left.getRight();
+						or_right_op = or_right.getOperator();
+						or_map.put(or_idx, or_right);
+
+						if (or_right_op == SQLBinaryOperator.BooleanAnd) {
+							deal_and_right(and_map, or_idx, or_right, or_right_op);
+						} else {
+							Map<Integer, SQLExpr> and_map_ele = new HashMap<Integer, SQLExpr>();
+							and_map_ele.put(0, or_right);
+							and_map.put(0, and_map_ele);
+						}
+
+					} else if (or_left.getRight() instanceof SQLInListExpr) {
+						or_map.put(0, or_left.getRight());
+					} else {
+
+					}
+
+					if (or_left.getLeft() instanceof SQLBinaryOpExpr) {
+						or_left = (SQLBinaryOpExpr) or_left.getLeft();
+
+						or_left_op = or_left.getOperator();
+					} else if (or_left.getLeft() instanceof SQLInListExpr) {
+						leftisin = true;
+						or_left_op = null;
+					} else {
+
+					}
+					or_idx++;
+
+				}
+
+				// 最左右是IN
+				if (leftisin) {
+					or_map.put(or_idx, or_left.getLeft());
+					or_idx++;
+				} else {
+					or_map.put(or_idx, or_left);
+
+					if (or_left_op == SQLBinaryOperator.BooleanAnd) {
+						deal_and_right(and_map, or_idx, or_left, or_left_op);
+					} else {
+						Map<Integer, SQLExpr> and_map_ele = new HashMap<Integer, SQLExpr>();
+						and_map_ele.put(0, or_left);
+						and_map.put(0, and_map_ele);
+					}
+					or_idx++;
+				}
+
+			} else if (top_op == SQLBinaryOperator.BooleanAnd) {
+
+				Map<Integer, SQLExpr> and_map = new HashMap<Integer, SQLExpr>();
+
+				int and_idx = 0;
+				SQLBinaryOpExpr and_left = top_expr;
+				SQLBinaryOpExpr and_right;
+				SQLBinaryOperator and_left_op = top_op;
+				SQLBinaryOperator and_right_op;
+				boolean leftisin = false;
+				while (and_left_op == SQLBinaryOperator.BooleanAnd) {
+					if (and_left.getRight() instanceof SQLBinaryOpExpr) {
+						and_right = (SQLBinaryOpExpr) and_left.getRight();
+						and_right_op = and_right.getOperator();
+						and_map.put(and_idx, and_right);
+
+						if (and_right_op.isRelational()) {
+							deal_relational(and_right);
+						} else {
+
+						}
+					} else if (and_left.getRight() instanceof SQLInListExpr) {
+						and_map.put(and_idx, and_left.getRight());
+					} else {
+
+					}
+
+					if (and_left.getLeft() instanceof SQLBinaryOpExpr) {
+						and_left = (SQLBinaryOpExpr) and_left.getLeft();
+
+						and_left_op = and_left.getOperator();
+						and_map.put(and_idx, and_left);
+					} else if (and_left.getLeft() instanceof SQLInListExpr) {
+						leftisin = true;
+						and_map.put(and_idx, and_left.getLeft());
+						and_left_op = null;
+					} else {
+
+					}
+					and_idx++;
+
+				}
+				// 最左右是IN
+				if (!leftisin) {
+
+					and_map.put(and_idx, and_left);
+					if (and_left_op.isRelational()) {
+						deal_relational(and_left);
+					} else {
+
+					}
+					and_idx++;
+				}
+			} else {
+				// 只有一个条件
+				if (top_op.isRelational()) {
+					deal_relational(top_expr);
+				} else {
+
+				}
+			}
+		}
+	}
+
+	private static void deal_and_right(Map<Integer, Map<Integer, SQLExpr>> and_map, int or_idx, SQLExpr or_right,
+			SQLBinaryOperator or_right_op) {
+
+		if (or_right instanceof SQLInListExpr) {
+			SQLInListExpr top_expr = (SQLInListExpr) or_right;
+			boolean isnot = top_expr.isNot();
+			List<SQLExpr> target_list = top_expr.getTargetList();
+			return;
+		}
+		if (or_right instanceof SQLBinaryOpExpr) {
+
+			int and_idx = 0;
+			SQLBinaryOpExpr top_expr = (SQLBinaryOpExpr) or_right;
+			SQLBinaryOpExpr and_left = top_expr;
+			SQLBinaryOpExpr and_right;
+			SQLBinaryOperator and_left_op = or_right_op;
+			SQLBinaryOperator and_right_op;
+
+			Map<Integer, SQLExpr> and_map_ele = new HashMap<Integer, SQLExpr>();
+			and_map.put(or_idx, and_map_ele);
+
+			boolean leftisin = false;
+			while (and_left_op == SQLBinaryOperator.BooleanAnd) {
+
+				if (and_left.getRight() instanceof SQLBinaryOpExpr) {
+					and_right = (SQLBinaryOpExpr) and_left.getRight();
+					and_right_op = and_right.getOperator();
+
+					and_map_ele.put(and_idx, and_right);
+
+					if (and_right_op.isRelational()) {
+						deal_relational(and_right);
+					} else {
+
+					}
+				} else if (and_left.getRight() instanceof SQLInListExpr) {
+					and_map_ele.put(and_idx, and_left.getRight());
+				} else {
+
+				}
+
+				if (and_left.getLeft() instanceof SQLBinaryOpExpr) {
+					and_left = (SQLBinaryOpExpr) and_left.getLeft();
+
+					and_left_op = and_left.getOperator();
+				} else if (and_left.getLeft() instanceof SQLInListExpr) {
+					leftisin = true;
+					and_left_op = null;
+				} else {
+
+				}
+				and_idx++;
+
+			}
+
+			// 最左右是IN
+			if (leftisin) {
+				and_map_ele.put(and_idx, and_left.getLeft());
+				and_idx++;
+			} else {
+
+				and_map_ele.put(and_idx, and_left);
+
+				if (and_left_op.isRelational()) {
+					deal_relational(and_left);
+				} else {
+
+				}
+				and_idx++;
+			}
+		}
+	}
+
+	private static void deal_relational(SQLBinaryOpExpr and_left) {
+		SQLExpr left = and_left.getLeft();
+		SQLExpr right = and_left.getRight();
+
+		SQLBinaryOperator op = and_left.getOperator();
+
+		String left_str = left.toString();
+		String right_str = right.toString();
 	}
 
 	public static void test_delete_htable(String sql) throws Exception {
@@ -1090,6 +1317,72 @@ public class Test {
 			pst.execute();
 
 			System.out.println(hdp_name + " created !");
+		}
+	}
+
+	public static void test_drop_table(String sql) throws Exception {
+
+		String dbType = JdbcUtils.MYSQL;
+		List<SQLStatement> stmtList;
+
+		stmtList = SQLUtils.parseStatements(sql, dbType);
+		for (Iterator iterator = stmtList.iterator(); iterator.hasNext();) {
+			SQLDropTableStatement stmt = (SQLDropTableStatement) iterator.next();
+
+			String current_hdb_name = "current_db";
+			String hdb_name = "";
+			String htable_name = "";
+
+			String alias = stmt.getTableSources().get(0).getExpr().toString();
+			String[] alias_arr = alias.split("\\.");
+			if (alias_arr.length == 1) {
+				hdb_name = current_hdb_name;
+				htable_name = alias_arr[0];
+			}
+			if (alias_arr.length == 2) {
+				hdb_name = alias_arr[0];
+				htable_name = alias_arr[1];
+			}
+
+			// check hdb_name和hdp_name 是否存在
+			// Htable htable = new Htable(hdb_name, htable_name, hdp_name);
+
+			String htable_sql = "delete from htable where hdb_name='<hdb_name>' and htable_name='<htable_name>'"
+					.replaceAll("<hdb_name>", hdb_name).replaceAll("<htable_name>", htable_name);
+			String hindex_sql = "delete from hindex where hdb_name='<hdb_name>' and htable_name='<htable_name>'"
+					.replaceAll("<hdb_name>", hdb_name).replaceAll("<htable_name>", htable_name);
+			String hcolumn_sql = "delete from hcolumn where hdb_name='<hdb_name>' and htable_name='<htable_name>'"
+					.replaceAll("<hdb_name>", hdb_name).replaceAll("<htable_name>", htable_name);
+			String rhindexhcolumn_sql = "delete from rhindexhcolumn where hdb_name='<hdb_name>' and htable_name='<htable_name>'"
+					.replaceAll("<hdb_name>", hdb_name).replaceAll("<htable_name>", htable_name);
+
+			PreparedStatement htable_ps = metadata.metadataConn.prepareStatement(htable_sql);
+			PreparedStatement hindex_ps = metadata.metadataConn.prepareStatement(hindex_sql);
+			PreparedStatement hcolumn_ps = metadata.metadataConn.prepareStatement(hcolumn_sql);
+			PreparedStatement rhindexhcolumn_ps = metadata.metadataConn.prepareStatement(rhindexhcolumn_sql);
+
+			htable_ps.execute();
+			htable_ps.close();
+			hindex_ps.execute();
+			hindex_ps.close();
+			hcolumn_ps.execute();
+			hcolumn_ps.close();
+			rhindexhcolumn_ps.execute();
+			rhindexhcolumn_ps.close();
+
+			String exec_sql = stmt.toString().replace(alias, htable_name);
+			Map hdb_conn_map = metadata.open_conn_by_hdb(hdb_name);
+			Iterator conn_it = hdb_conn_map.keySet().iterator();
+			while (conn_it.hasNext()) {
+				String key = (String) conn_it.next();
+				Connection conn = ((Connection) hdb_conn_map.get(key));
+				PreparedStatement exec_pst = conn.prepareStatement(exec_sql);
+				exec_pst.execute();
+				exec_pst.close();
+				System.out.println(hdb_name + "." + htable_name + " droped in " + key);
+
+			}
+			System.out.println(hdb_name + "." + htable_name + " droped !");
 		}
 	}
 
