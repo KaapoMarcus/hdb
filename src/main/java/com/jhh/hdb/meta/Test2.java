@@ -39,27 +39,22 @@ import java.util.regex.Pattern;
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.SQLOrderBy;
 import com.alibaba.druid.sql.ast.SQLOrderingSpecification;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOpExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
-import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLInListExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
 import com.alibaba.druid.sql.ast.expr.SQLLiteralExpr;
 import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
-import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
 import com.alibaba.druid.sql.ast.statement.SQLCreateDatabaseStatement;
 import com.alibaba.druid.sql.ast.statement.SQLDropTableStatement;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement.ValuesClause;
 import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource.JoinType;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
@@ -86,7 +81,7 @@ import com.alibaba.druid.util.JdbcUtils;
 import com.jhh.hdb.proxyserver.define.ServerStatus;
 
 @SuppressWarnings({ "rawtypes", "unused", "unchecked" })
-public class Test {
+public class Test2 {
 
 	/*
 	 * 得到最大最小id和记录数 ，使用多线程
@@ -138,15 +133,15 @@ public class Test {
 	static DateFormat spacedatetimeformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	// static String sqlstr = null;
-	// static String start_str = "start ";
-	// static String step = EMPTY;
-	// static String stop_str = "stop ";
+	static String start_str = "start ";
+	static String step = EMPTY;
+	static String stop_str = "stop ";
 	static String user = "root";
 	static String workDir = "/data/";
 
 	static ExecutorService x = null;
 
-	public Test() {
+	public Test2() {
 
 	}
 
@@ -1102,273 +1097,6 @@ public class Test {
 
 	private static void do_from_jointable(SQLSelectStatement stmt) throws Exception, SQLException {
 
-		SQLSelect sqlSelect = stmt.getSelect();
-		MySqlSelectQueryBlock query = (MySqlSelectQueryBlock) sqlSelect.getQuery();
-
-		SQLTableSource from = query.getFrom();
-
-		SQLExpr where = query.getWhere();
-
-		SQLSelectGroupByClause groupby = query.getGroupBy();
-		SQLOrderBy orderby = query.getOrderBy();
-
-		List<SQLSelectItem> item_list = query.getSelectList();
-		Limit limit = query.getLimit();
-
-		String fromstr = from.toString();
-		SQLJoinTableSource varfrom = (SQLJoinTableSource) from;
-
-		List tablename_list = new ArrayList();
-		List tablealias_list = new ArrayList();
-		SQLTableSource left = varfrom.getLeft();
-		JoinType joinType = varfrom.getJoinType();
-		SQLTableSource right = varfrom.getRight();
-		SQLExpr condition = varfrom.getCondition();
-
-		String left_alias = left.getAlias();
-		String right_alias = right.getAlias();
-
-		if (left instanceof SQLExprTableSource) {
-			SQLExprTableSource tmp_tab =  (SQLExprTableSource) left;
-
-			tablename_list.add(tmp_tab.getExpr().toString());
-			tablealias_list.add(tmp_tab.getAlias());
-		}
-
-		while (right instanceof SQLJoinTableSource) {
-			varfrom = (SQLJoinTableSource) right;
-			left = varfrom.getLeft();
-			joinType = varfrom.getJoinType();
-			right = varfrom.getRight();
-			condition = varfrom.getCondition();
-			if (left instanceof SQLExprTableSource) {
-				SQLExprTableSource tmp_tab =  (SQLExprTableSource) left;
-
-				tablename_list.add(tmp_tab.getExpr().toString());
-				tablealias_list.add(tmp_tab.getAlias());
-			}
-		}
-
-		if (right instanceof SQLExprTableSource) {
-			SQLExprTableSource tmp_tab =  (SQLExprTableSource) right;
-			tablename_list.add(tmp_tab.getExpr().toString());
-			tablealias_list.add(tmp_tab.getAlias());
-		}
-
-		final String map_tablename = getMapTableName();
-		final String reduce_tablename = getReduceTableName();
-		MapReduceGroupNode node00 = new MapReduceGroupNode(0, 0, "node00", null, NodeType.GROUP, stmt);
-
-		MySqlSelectQueryBlock map_query = new MySqlSelectQueryBlock();
-		map_query.setFrom(from);
-		map_query.setWhere(where);
-		SQLSelect map_sqlSelect = new SQLSelect(map_query);
-		SQLSelectStatement map_stmt = new SQLSelectStatement(map_sqlSelect);
-
-		MySqlSelectQueryBlock reduce_query = new MySqlSelectQueryBlock();
-		SQLSelect reduce_sqlSelect = new SQLSelect(reduce_query);
-		SQLSelectStatement reduce_stmt = new SQLSelectStatement(reduce_sqlSelect);
-		reduce_query.setFrom(from);
-		reduce_query.setWhere(null);
-		reduce_query.setGroupBy(groupby);
-
-		int inner_alias_orderno = 0;
-		for (Iterator iterator2 = item_list.iterator(); iterator2.hasNext();) {
-			SQLSelectItem sqlSelectItem = (SQLSelectItem) iterator2.next();
-
-			parse_item(sqlSelectItem);
-			// inner_alias_orderno = parse_expr(map_query, reduce_query,
-			// inner_alias_orderno, sqlSelectItem, alias, expr);
-
-		}
-
-	}
-
-	private static void parse_item(SQLSelectItem sqlSelectItem) {
-		String alias = sqlSelectItem.getAlias();
-		SQLExpr expr = sqlSelectItem.getExpr();
-
-		reverse(alias, expr);
-	}
-
-	private static void reverse(String alias, SQLExpr expr) {
-		if (expr instanceof SQLMethodInvokeExpr) {
-			SQLMethodInvokeExpr x = (SQLMethodInvokeExpr) expr;
-			String methodName = x.getMethodName();
-			List<SQLExpr> params = x.getParameters();
-
-			SQLObject parent = x.getParent();
-			SQLExpr owner = x.getOwner();
-			for (Iterator iterator = params.iterator(); iterator.hasNext();) {
-				SQLExpr sqlExpr = (SQLExpr) iterator.next();
-				reverse(null, sqlExpr);
-			}
-		}
-		if (expr instanceof SQLInListExpr) {
-			SQLInListExpr top_expr = (SQLInListExpr) expr;
-			boolean isnot = top_expr.isNot();
-			List<SQLExpr> target_list = top_expr.getTargetList();
-
-		}
-		if (expr instanceof SQLIntegerExpr) {
-			SQLIntegerExpr x = (SQLIntegerExpr) expr;
-		}
-		if (expr instanceof SQLCharExpr) {
-			SQLCharExpr x = (SQLCharExpr) expr;
-		}
-		if (expr instanceof SQLBinaryOpExpr) {
-			SQLBinaryOpExpr top_expr = (SQLBinaryOpExpr) expr;
-			SQLBinaryOperator top_op = top_expr.getOperator();
-
-			if (top_op == SQLBinaryOperator.BooleanOr) {
-
-				Map<Integer, SQLExpr> or_map = new HashMap<Integer, SQLExpr>();
-				Map<Integer, Map<Integer, SQLExpr>> and_map = new HashMap<Integer, Map<Integer, SQLExpr>>();
-
-				int or_idx = 0;
-				SQLBinaryOpExpr or_left = top_expr;
-				SQLBinaryOpExpr or_right;
-
-				SQLBinaryOperator or_left_op = top_op;
-				SQLBinaryOperator or_right_op;
-
-				boolean leftisin = false;
-				while (or_left_op == SQLBinaryOperator.BooleanOr) {
-
-					if (or_left.getRight() instanceof SQLBinaryOpExpr) {
-						or_right = (SQLBinaryOpExpr) or_left.getRight();
-						or_right_op = or_right.getOperator();
-						or_map.put(or_idx, or_right);
-
-						if (or_right_op == SQLBinaryOperator.BooleanAnd) {
-							deal_and_right(and_map, or_idx, or_right, or_right_op);
-						} else {
-							Map<Integer, SQLExpr> and_map_ele = new HashMap<Integer, SQLExpr>();
-							and_map_ele.put(0, or_right);
-							and_map.put(0, and_map_ele);
-						}
-
-					} else if (or_left.getRight() instanceof SQLInListExpr) {
-						or_map.put(0, or_left.getRight());
-					} else {
-
-					}
-
-					if (or_left.getLeft() instanceof SQLBinaryOpExpr) {
-						or_left = (SQLBinaryOpExpr) or_left.getLeft();
-						or_left_op = or_left.getOperator();
-					} else if (or_left.getLeft() instanceof SQLInListExpr) {
-						leftisin = true;
-						or_left_op = null;
-					} else {
-
-					}
-					or_idx++;
-
-				}
-
-				// 最左右不是IN
-				if (!leftisin) {
-					or_map.put(or_idx, or_left);
-
-					if (or_left_op == SQLBinaryOperator.BooleanAnd) {
-						deal_and_right(and_map, or_idx, or_left, or_left_op);
-					} else {
-						Map<Integer, SQLExpr> and_map_ele = new HashMap<Integer, SQLExpr>();
-						and_map_ele.put(0, or_left);
-						and_map.put(0, and_map_ele);
-					}
-					or_idx++;
-				}
-
-			} else if (top_op == SQLBinaryOperator.BooleanAnd) {
-
-				Map<Integer, SQLExpr> and_map = new HashMap<Integer, SQLExpr>();
-
-				int and_idx = 0;
-				SQLBinaryOpExpr and_left = top_expr;
-				SQLBinaryOpExpr and_right;
-				SQLBinaryOperator and_left_op = top_op;
-				SQLBinaryOperator and_right_op;
-				boolean leftisin = false;
-				while (and_left_op == SQLBinaryOperator.BooleanAnd) {
-					if (and_left.getRight() instanceof SQLBinaryOpExpr) {
-						and_right = (SQLBinaryOpExpr) and_left.getRight();
-						and_right_op = and_right.getOperator();
-						and_map.put(and_idx, and_right);
-
-						if (and_right_op.isRelational()) {
-							deal_relational(and_right);
-						} else {
-
-						}
-					} else if (and_left.getRight() instanceof SQLInListExpr) {
-						and_map.put(and_idx, and_left.getRight());
-					} else {
-
-					}
-
-					if (and_left.getLeft() instanceof SQLBinaryOpExpr) {
-						and_left = (SQLBinaryOpExpr) and_left.getLeft();
-						and_left_op = and_left.getOperator();
-					} else if (and_left.getLeft() instanceof SQLInListExpr) {
-						leftisin = true;
-						and_map.put(and_idx, and_left.getLeft());
-						and_left_op = null;
-					} else {
-
-					}
-					and_idx++;
-
-				}
-				// 最左右不是IN
-				if (!leftisin) {
-
-					and_map.put(and_idx, and_left);
-					if (and_left_op.isRelational()) {
-						deal_relational(and_left);
-					} else {
-
-					}
-					and_idx++;
-				}
-			} else {
-				// 只有一个条件
-				if (top_op.isRelational()) {
-					deal_relational(top_expr);
-				} else {
-					SQLBinaryOpExpr my_left;
-					SQLBinaryOpExpr my_right = top_expr;
-					SQLBinaryOperator my_left_op;
-					SQLBinaryOperator my_right_op = top_op;
-					while (my_right_op == SQLBinaryOperator.Add || my_right_op == SQLBinaryOperator.Subtract
-							|| my_right_op == SQLBinaryOperator.Multiply || my_right_op == SQLBinaryOperator.Divide
-							|| my_right_op == SQLBinaryOperator.Modulus) {
-						if (my_right.getRight() instanceof SQLBinaryOpExpr) {
-							System.out.println(my_right.getLeft().toString());
-							my_right = (SQLBinaryOpExpr) my_right.getRight();
-							my_right_op = my_right.getOperator();
-
-						} else {
-							System.out.println(my_right.getLeft().toString());
-							System.out.println(my_right.getRight().toString());
-							my_right_op = null;
-						}
-					}
-					System.out.println(my_right.toString());
-				}
-			}
-		}
-
-		if (expr instanceof SQLPropertyExpr) {
-			// 有表名字的字段
-			SQLPropertyExpr x = (SQLPropertyExpr) expr;
-		}
-		if (expr instanceof SQLIdentifierExpr) {
-			// 没有指定表名字的字段
-			SQLIdentifierExpr x = (SQLIdentifierExpr) expr;
-		}
-		System.out.println(alias + " " + expr.toString() + "  " + expr.getClass().toGenericString());
 	}
 
 	private static void do_from_onetable(SQLSelectStatement stmt) throws Exception, SQLException {
@@ -1508,8 +1236,45 @@ public class Test {
 				reduce_query.setWhere(null);
 				reduce_query.setGroupBy(groupby);
 
-				parse_item_list(item_list, map_query, reduce_query);
+				int inner_alias_orderno = 0;
+				for (Iterator iterator2 = item_list.iterator(); iterator2.hasNext();) {
+					SQLSelectItem sqlSelectItem = (SQLSelectItem) iterator2.next();
 
+					String alias = sqlSelectItem.getAlias();
+					SQLExpr expr = sqlSelectItem.getExpr();
+					if (expr instanceof SQLIdentifierExpr) {
+						map_query.getSelectList().add(sqlSelectItem);
+						reduce_query.getSelectList().add(sqlSelectItem);
+					}
+					if (expr instanceof SQLAggregateExpr) {
+						SQLAggregateExpr aggr_expr = (SQLAggregateExpr) expr;
+						String methodName = aggr_expr.getMethodName();
+						List<SQLExpr> args = aggr_expr.getArguments();
+
+						List<SQLExpr> reduce_args = new ArrayList<SQLExpr>();
+						for (Iterator iterator3 = args.iterator(); iterator3.hasNext();) {
+							SQLExpr sqlExpr = (SQLExpr) iterator3.next();
+
+							String inner_alias = "_inner_column_" + inner_alias_orderno;
+							inner_alias_orderno++;
+							SQLSelectItem inner_item = new SQLSelectItem(sqlExpr, inner_alias);
+							map_query.getSelectList().add(inner_item);
+
+							SQLIdentifierExpr idenExpr = new SQLIdentifierExpr(inner_alias);
+							reduce_args.add(idenExpr);
+						}
+
+						SQLAggregateExpr reduce_aggr_expr = new SQLAggregateExpr(methodName);
+						reduce_aggr_expr.getArguments().addAll(reduce_args);
+						SQLSelectItem reduce_sqlSelectItem = new SQLSelectItem(reduce_aggr_expr, alias);
+						reduce_query.getSelectList().add(reduce_sqlSelectItem);
+					}
+
+					if (expr instanceof SQLMethodInvokeExpr) {
+
+					}
+
+				}
 				final String map_sql = map_stmt.toString().replace(fromstr, htable_name);
 				final String reduce_sql = reduce_stmt.toString().replace(fromstr, map_tablename);
 				node00.sql = stmt.toString();
@@ -2036,9 +1801,9 @@ public class Test {
 			} else {
 				final String map_tablename = getMapTableName();
 				final String reduce_tablename = getReduceTableName();
-
+				
 				final String shuffle_field = orderby_items.get(0).getExpr().toString();
-
+				
 				MapReduceGroupNode node00 = new MapReduceGroupNode(0, 0, "node00", null, NodeType.GROUP, stmt);
 				MySqlSelectQueryBlock map_query = new MySqlSelectQueryBlock();
 				map_query.setFrom(from);
@@ -2056,7 +1821,7 @@ public class Test {
 				SQLSelect reduce_sqlSelect = new SQLSelect(reduce_query);
 				reduce_sqlSelect.setOrderBy(orderby);
 				SQLSelectStatement reduce_stmt = new SQLSelectStatement(reduce_sqlSelect);
-
+		
 				final String map_sql = map_stmt.toString().replace(fromstr, htable_name);
 				final String reduce_sql = reduce_stmt.toString().replace(fromstr, map_tablename);
 				node00.sql = stmt.toString();
@@ -2070,7 +1835,7 @@ public class Test {
 				 */
 
 				taskMap = new HashMap<String, Future>();
-
+				
 				final String final_htable_name = htable_name;
 				{
 					final String sqlstr = base_id_sql.replaceAll("<table>", htable_name).replaceAll("<shuffle_field>",
@@ -2355,7 +2120,7 @@ public class Test {
 										int count = rsmd.getColumnCount();
 										String columns_str = "====result===\n";
 										for (int i = 1; i <= count; i++) {
-
+					
 											columns_str = columns_str + rsmd.getColumnName(i) + "\t";
 
 										}
@@ -2504,6 +2269,7 @@ public class Test {
 			}
 
 			x.shutdown();
+		
 
 		}
 		if (groupby != null && orderby != null) {
@@ -2550,99 +2316,6 @@ public class Test {
 
 		}
 
-	}
-
-	private static void parse_item_list(List<SQLSelectItem> item_list, MySqlSelectQueryBlock map_query,
-			MySqlSelectQueryBlock reduce_query) {
-		int inner_alias_orderno = 0;
-		for (Iterator iterator2 = item_list.iterator(); iterator2.hasNext();) {
-			SQLSelectItem sqlSelectItem = (SQLSelectItem) iterator2.next();
-
-			String alias = sqlSelectItem.getAlias();
-			SQLExpr expr = sqlSelectItem.getExpr();
-
-			inner_alias_orderno = parse_expr(map_query, reduce_query, inner_alias_orderno, sqlSelectItem, alias, expr);
-
-		}
-	}
-
-	/*
-	 * 
-	 * 
-	 * 如果是 SQLIdentifierExpr
-	 * 
-	 * 
-	 */
-	private static int parse_expr(MySqlSelectQueryBlock map_query, MySqlSelectQueryBlock reduce_query,
-			int inner_alias_orderno, SQLSelectItem sqlSelectItem, String alias, SQLExpr expr) {
-		if (expr instanceof SQLIdentifierExpr) {
-			SQLSelectItem map_item = new SQLSelectItem();
-			String inner_alias = "_inner_column_" + inner_alias_orderno;
-			inner_alias_orderno++;
-			map_item.setAlias(inner_alias);
-			map_item.setExpr(expr);
-
-			SQLSelectItem reduce_item = new SQLSelectItem();
-			reduce_item.setExpr(new SQLIdentifierExpr(inner_alias));
-
-			map_query.getSelectList().add(map_item);
-			reduce_query.getSelectList().add(reduce_item);
-		}
-		if (expr instanceof SQLAggregateExpr) {
-			SQLAggregateExpr aggr_expr = (SQLAggregateExpr) expr;
-			String methodName = aggr_expr.getMethodName();
-			List<SQLExpr> args = aggr_expr.getArguments();
-
-			List<SQLExpr> reduce_args = new ArrayList<SQLExpr>();
-			for (Iterator iterator3 = args.iterator(); iterator3.hasNext();) {
-				SQLExpr sqlExpr = (SQLExpr) iterator3.next();
-
-				String inner_alias = "_inner_column_" + inner_alias_orderno;
-				inner_alias_orderno++;
-				SQLSelectItem inner_item = new SQLSelectItem(sqlExpr, inner_alias);
-				map_query.getSelectList().add(inner_item);
-
-				SQLIdentifierExpr idenExpr = new SQLIdentifierExpr(inner_alias);
-				reduce_args.add(idenExpr);
-			}
-
-			SQLAggregateExpr reduce_aggr_expr = new SQLAggregateExpr(methodName);
-			reduce_aggr_expr.getArguments().addAll(reduce_args);
-			SQLSelectItem reduce_sqlSelectItem = new SQLSelectItem(reduce_aggr_expr, alias);
-			reduce_query.getSelectList().add(reduce_sqlSelectItem);
-		}
-
-		if (expr instanceof SQLMethodInvokeExpr) {
-
-			SQLMethodInvokeExpr methodExpr = (SQLMethodInvokeExpr) expr;
-			String methodName = methodExpr.getMethodName();
-			List<SQLExpr> param_list = methodExpr.getParameters();
-			for (int i = 0; i < param_list.size(); i++) {
-				SQLExpr item_expr = param_list.get(i);
-			}
-
-			if (alias == null || alias.length() == 0) {
-				String inner_alias = "_inner_column_" + inner_alias_orderno;
-				inner_alias_orderno++;
-				SQLSelectItem inner_item = new SQLSelectItem(expr, inner_alias);
-				map_query.getSelectList().add(inner_item);
-
-				SQLIdentifierExpr idenExpr = new SQLIdentifierExpr(inner_alias);
-				SQLSelectItem reduce_sqlSelectItem = new SQLSelectItem(idenExpr, alias);
-				reduce_query.getSelectList().add(reduce_sqlSelectItem);
-			} else {
-				map_query.getSelectList().add(sqlSelectItem);
-
-				SQLIdentifierExpr idenExpr = new SQLIdentifierExpr(alias);
-				SQLSelectItem reduce_sqlSelectItem = new SQLSelectItem(idenExpr);
-				reduce_query.getSelectList().add(reduce_sqlSelectItem);
-			}
-		}
-		return inner_alias_orderno;
-	}
-
-	private static void parse_itemlist(List<SQLSelectItem> item_list, MySqlSelectQueryBlock map_query,
-			MySqlSelectQueryBlock reduce_query) {
 	}
 
 	public static String get_col_definition_str(Map<Integer, ColumnInfo> col_map, boolean hasindex) throws Exception {
@@ -2911,6 +2584,13 @@ public class Test {
 			ci.tablename = rsmd.getTableName(i);
 
 			col_map.put(i, ci);
+			// String classname = rsmd.getColumnClassName(i);
+			// int displaysize = rsmd.getColumnDisplaySize(i);
+			// int nullable = rsmd.isNullable(i);
+			// cols_str += label + "\t" + typename + "\t"
+			// + classname + "\t" + type + "\t"
+			// + precision + "\t" + displaysize + "\t"
+			// + tablename + "\t" + nullable;
 
 		}
 
@@ -3317,6 +2997,9 @@ public class Test {
 
 		exec.shutdown();
 
+		logstr = stop_str + step;
+		printLogStr(logstr);
+
 	}
 
 	public static void get_group(MapReduceNode x) throws Exception {
@@ -3719,6 +3402,9 @@ public class Test {
 
 		exec.shutdown();
 
+		logstr = stop_str + step;
+		printLogStr(logstr);
+
 	}
 
 	public static void execNode(MapReduceNode node) throws Exception {
@@ -3875,143 +3561,6 @@ public class Test {
 			}
 		}
 		return group_hdc_is_same;
-	}
-
-	private static void parse_join(SQLExpr where) {
-		// 判读where中是否包含 hdc的信息,以便发送到指定的节点
-
-		if (where instanceof SQLInListExpr) {
-			SQLInListExpr top_expr = (SQLInListExpr) where;
-			boolean isnot = top_expr.isNot();
-			List<SQLExpr> target_list = top_expr.getTargetList();
-			return;
-		}
-		if (where instanceof SQLBinaryOpExpr) {
-
-			SQLBinaryOpExpr top_expr = (SQLBinaryOpExpr) where;
-			SQLBinaryOperator top_op = top_expr.getOperator();
-
-			if (top_op == SQLBinaryOperator.BooleanOr) {
-
-				Map<Integer, SQLExpr> or_map = new HashMap<Integer, SQLExpr>();
-				Map<Integer, Map<Integer, SQLExpr>> and_map = new HashMap<Integer, Map<Integer, SQLExpr>>();
-
-				int or_idx = 0;
-				SQLBinaryOpExpr or_left = top_expr;
-				SQLBinaryOpExpr or_right;
-
-				SQLBinaryOperator or_left_op = top_op;
-				SQLBinaryOperator or_right_op;
-
-				boolean leftisin = false;
-				while (or_left_op == SQLBinaryOperator.BooleanOr) {
-
-					if (or_left.getRight() instanceof SQLBinaryOpExpr) {
-						or_right = (SQLBinaryOpExpr) or_left.getRight();
-						or_right_op = or_right.getOperator();
-						or_map.put(or_idx, or_right);
-
-						if (or_right_op == SQLBinaryOperator.BooleanAnd) {
-							deal_and_right(and_map, or_idx, or_right, or_right_op);
-						} else {
-							Map<Integer, SQLExpr> and_map_ele = new HashMap<Integer, SQLExpr>();
-							and_map_ele.put(0, or_right);
-							and_map.put(0, and_map_ele);
-						}
-
-					} else if (or_left.getRight() instanceof SQLInListExpr) {
-						or_map.put(0, or_left.getRight());
-					} else {
-
-					}
-
-					if (or_left.getLeft() instanceof SQLBinaryOpExpr) {
-						or_left = (SQLBinaryOpExpr) or_left.getLeft();
-						or_left_op = or_left.getOperator();
-					} else if (or_left.getLeft() instanceof SQLInListExpr) {
-						leftisin = true;
-						or_left_op = null;
-					} else {
-
-					}
-					or_idx++;
-
-				}
-
-				// 最左右不是IN
-				if (!leftisin) {
-					or_map.put(or_idx, or_left);
-
-					if (or_left_op == SQLBinaryOperator.BooleanAnd) {
-						deal_and_right(and_map, or_idx, or_left, or_left_op);
-					} else {
-						Map<Integer, SQLExpr> and_map_ele = new HashMap<Integer, SQLExpr>();
-						and_map_ele.put(0, or_left);
-						and_map.put(0, and_map_ele);
-					}
-					or_idx++;
-				}
-
-			} else if (top_op == SQLBinaryOperator.BooleanAnd) {
-
-				Map<Integer, SQLExpr> and_map = new HashMap<Integer, SQLExpr>();
-
-				int and_idx = 0;
-				SQLBinaryOpExpr and_left = top_expr;
-				SQLBinaryOpExpr and_right;
-				SQLBinaryOperator and_left_op = top_op;
-				SQLBinaryOperator and_right_op;
-				boolean leftisin = false;
-				while (and_left_op == SQLBinaryOperator.BooleanAnd) {
-					if (and_left.getRight() instanceof SQLBinaryOpExpr) {
-						and_right = (SQLBinaryOpExpr) and_left.getRight();
-						and_right_op = and_right.getOperator();
-						and_map.put(and_idx, and_right);
-
-						if (and_right_op.isRelational()) {
-							deal_relational(and_right);
-						} else {
-
-						}
-					} else if (and_left.getRight() instanceof SQLInListExpr) {
-						and_map.put(and_idx, and_left.getRight());
-					} else {
-
-					}
-
-					if (and_left.getLeft() instanceof SQLBinaryOpExpr) {
-						and_left = (SQLBinaryOpExpr) and_left.getLeft();
-						and_left_op = and_left.getOperator();
-					} else if (and_left.getLeft() instanceof SQLInListExpr) {
-						leftisin = true;
-						and_map.put(and_idx, and_left.getLeft());
-						and_left_op = null;
-					} else {
-
-					}
-					and_idx++;
-
-				}
-				// 最左右不是IN
-				if (!leftisin) {
-
-					and_map.put(and_idx, and_left);
-					if (and_left_op.isRelational()) {
-						deal_relational(and_left);
-					} else {
-
-					}
-					and_idx++;
-				}
-			} else {
-				// 只有一个条件
-				if (top_op.isRelational()) {
-					deal_relational(top_expr);
-				} else {
-
-				}
-			}
-		}
 	}
 
 	private static void parse_where(SQLExpr where) {

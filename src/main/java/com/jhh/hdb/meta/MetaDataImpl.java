@@ -56,10 +56,12 @@ public class MetaDataImpl {
 	}
 
 	Connection getConnection() throws Exception {
+		if(metadataConn==null){
 
-		Class.forName("com.mysql.jdbc.Driver");
-		String url = "jdbc:mysql://10.199.134.41:3306/hdbmeta";
-		metadataConn = DriverManager.getConnection(url, user, password);
+			Class.forName("com.mysql.jdbc.Driver");
+			String url = "jdbc:mysql://10.199.134.41:3306/hdbmeta";
+			metadataConn = DriverManager.getConnection(url, user, password);
+		}
 		return metadataConn;
 	}
 
@@ -238,6 +240,34 @@ public class MetaDataImpl {
 			Hcolumn entry = new Hcolumn(hdb_name, htable_name, hcolumn_name, hcolumn_type, htable_orderno, hdc_flag,
 					hdc_orderno);
 			hcolumn_namemap.put(hcolumn_name, entry);
+		}
+
+		rs.close();
+		stmt.close();
+		return hcolumn_namemap;
+	}
+	public Map get_hdc_list2_by_htable(String hdb_name, String htable_name) throws Exception {
+
+		String sql = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		sql = "select * from hcolumn where hdb_name='<hdb_name>' and htable_name='<htable_name>' and hdc_flag=1 order by hdc_orderno asc ";
+		String exec_sql = sql.replace("<hdb_name>", hdb_name).replace("<htable_name>", htable_name);
+		stmt = metadataConn.createStatement();
+		rs = stmt.executeQuery(exec_sql);
+		Map conn_map = new HashMap();
+		Map hcolumn_namemap = new HashMap();
+		while (rs.next()) {
+			String hcolumn_name = rs.getString(3);
+			String hcolumn_type = rs.getString(4);
+			Integer htable_orderno = rs.getInt(5);
+			Integer hdc_flag = rs.getInt(6);
+			Integer hdc_orderno = rs.getInt(7);
+
+			Hcolumn entry = new Hcolumn(hdb_name, htable_name, hcolumn_name, hcolumn_type, htable_orderno, hdc_flag,
+					hdc_orderno);
+			hcolumn_namemap.put(hdc_orderno, hcolumn_name);
 		}
 
 		rs.close();
