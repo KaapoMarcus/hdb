@@ -64,6 +64,7 @@ import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectGroupByClause;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
+import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLShowTablesStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
@@ -84,6 +85,7 @@ import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock.L
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlShowDatabasesStatement;
 import com.alibaba.druid.util.JdbcUtils;
 import com.jhh.hdb.proxyserver.define.ServerStatus;
+import com.jhh.hdb.visitor.MapReduceOutputVisitor_T2;
 
 @SuppressWarnings({ "rawtypes", "unused", "unchecked" })
 public class Test {
@@ -165,6 +167,9 @@ public class Test {
 
 		sql = StringTemplateUtils.read_stat("test_select_1");
 		test_select(sql);
+		
+//		sql = StringTemplateUtils.read_stat("test_select_1");
+//		test_select(sql);
 
 		// sql = StringTemplateUtils.read_stat("q_drop_table_uinfo");
 		// test_drop_table(sql);
@@ -1007,12 +1012,8 @@ public class Test {
 		return new MyResultSetCmd(mrs, null, false, ServerStatus.SERVER_STATUS_AUTOCOMMIT);
 	}
 
-	/*
-	 * group 只能只字段 , order 只能只字段 或者 group 的聚合字段
-	 * 
-	 * 条件只考虑 = in > < <> like regexp
-	 */
-	public static void test_select(String sql) throws Exception {
+
+	public static void test_visit(String sql) throws Exception {
 
 		String dbType = JdbcUtils.MYSQL;
 		List<SQLStatement> stmtList;
@@ -1026,31 +1027,25 @@ public class Test {
 			SQLTableSource from = query.getFrom();
 
 			SQLExpr where = query.getWhere();
+		}
+	}
+	/*
+	 * group 只能只字段 , order 只能只字段 或者 group 的聚合字段
+	 * 
+	 * 条件只考虑 = in > < <> like regexp
+	 */
+	public static void test_select(String sql) throws Exception {
 
-			SQLSelectGroupByClause groupby = query.getGroupBy();
-			SQLOrderBy orderby = query.getOrderBy();
+		String dbType = JdbcUtils.MYSQL;
+		List<SQLStatement> stmtList;
 
-			List<SQLSelectItem> item_list = query.getSelectList();
-			Limit limit = query.getLimit();
-
-			if (from == null) {
-				do_nofrom_select(stmt);
-			}
-
-			if (from instanceof SQLExprTableSource) {
-				do_from_onetable(stmt);
-			}
-			if (from instanceof SQLJoinTableSource) {
-
-				do_from_jointable(stmt);
-			}
-			if (from instanceof SQLSubqueryTableSource) {
-				SQLSubqueryTableSource varfrom = (SQLSubqueryTableSource) from;
-			}
-			if (from instanceof SQLUnionQueryTableSource) {
-				SQLUnionQueryTableSource varfrom = (SQLUnionQueryTableSource) from;
-			}
-
+		stmtList = SQLUtils.parseStatements(sql, dbType);
+		for (Iterator iterator = stmtList.iterator(); iterator.hasNext();) {
+			SQLSelectStatement stmt = (SQLSelectStatement) iterator.next();
+			
+			MapReduceOutputVisitor_T2 visitor = new MapReduceOutputVisitor_T2(null);
+			visitor.visit(stmt);
+		
 		}
 
 	}
@@ -1447,7 +1442,7 @@ public class Test {
 				}
 			}
 		}
-		// parse_where(where);
+		 parse_where(where);
 		if (groupby != null && orderby == null) {
 			x = Executors.newFixedThreadPool(hdb_conn_map.size());
 

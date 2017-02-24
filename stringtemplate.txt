@@ -100,19 +100,8 @@ test_select_1====
  group by uloginip
 ;;;;
 
-test_select_1====
- select uage ,count(1) login_count ,min(uid) min_uid ,max(uid) max_uid
- from hdbtest10.uinfo 
- where  uid >=50 and uid<250 
- group by uage
-;;;;
 
-test_select_1====
- select uid ,uage ,ubirthday ,uname 
- from hdbtest10.uinfo 
- where  uid >=20 and uid<150 
- order by uage
-;;;;
+
 
 test_select_1====
 select concat(a.uid , a.uname)  ,a.uid in (200,300) ,  b.ulogindatetime like '2016-10-%' and a.uid >=50 and a.uid<100  , 
@@ -135,8 +124,27 @@ where ( a.uid=b.uid  and  b.ulogindatetime like '2016-10-%' )
 group by concat(a.uid , a.uname)
 ;;;;
 
+test_select_1====
+ select uid ,uage ,ubirthday ,uname 
+ from hdbtest10.uinfo 
+ where  uid >=20 and uid<150 
+ order by uage
+;;;;
+
+test_select_2====
+ select uage ,count(1) login_count ,min(uid) min_uid ,max(uid) max_uid
+ from hdbtest10.uinfo 
+ where  uid >=50 and uid<250 
+ group by uage
+;;;;
 
 
+
+test_select_3====
+select a.id , a.EMAIL , a.tel ,b.REGISTER_DATE,b.BIRTHDAY
+ from user_info a left join user_info_etc b 
+on ( a.id=b.user_id and a.enable=1 and a.is_fake=0  )  order by b.REGISTER_DATE desc 
+;;;;
 
 test_expr_1====
 concat(a.uid , a.uname)  ,a.uid in (200,300) as uidin, 

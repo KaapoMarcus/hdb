@@ -1,7 +1,6 @@
 package com.jhh.hdb;
 
 import java.io.File;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -12,11 +11,9 @@ import java.util.jar.JarFile;
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
+import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.parser.Token;
-import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
 import com.alibaba.druid.util.JdbcUtils;
 import com.jhh.hdb.meta.StringTemplateUtils;
 
@@ -32,27 +29,68 @@ public class TestHdb {
 		System.out.println(expr_1);
 	}
 
+	/*
+	1 找出所有的子查询 , 将子查询对应到一个 mr
+	2 对每个子查询,翻译为一个或者多个mr
+	 * 
+	 */
 	public static void test_select() {
-		sql = StringTemplateUtils.read_stat("test_select_1");
+		{
+			sql = StringTemplateUtils.read_stat("test_select_1");
 
-		List<SQLStatement> stmtList = null;
+			List<SQLStatement> stmtList = null;
 
-		stmtList = SQLUtils.parseStatements(sql, JdbcUtils.MYSQL);
+			stmtList = SQLUtils.parseStatements(sql, JdbcUtils.MYSQL);
 
-		for (Iterator iterator = stmtList.iterator(); iterator.hasNext();) {
-			SQLSelectStatement stmt = (SQLSelectStatement) iterator.next();
+			for (Iterator iterator = stmtList.iterator(); iterator.hasNext();) {
+				SQLSelectStatement stmt = (SQLSelectStatement) iterator.next();
 
-			StringBuilder strbuilder = new StringBuilder();
-			SQLASTOutputVisitor visitor = SQLUtils.createFormatOutputVisitor(strbuilder, null, JdbcUtils.MYSQL);
-			stmt.accept(visitor);
-			System.out.println(strbuilder.toString());
-			
-			// StringBuffer strbuffer = new StringBuffer();
-			// stmt.output(strbuffer);
-			// System.out.println(strbuffer.toString());
+				StringBuilder strbuilder = new StringBuilder();
+				// MapReduceOutputVisitor visitor = new
+				// MapReduceOutputVisitor(strbuilder);
+				MySqlOutputVisitor visitor = new MySqlOutputVisitor(strbuilder);
+				stmt.accept(visitor);
+				System.out.println(strbuilder.toString());
+			}
+		}
+		
+		{
+			sql = StringTemplateUtils.read_stat("test_select_2");
 
+			List<SQLStatement> stmtList = null;
+
+			stmtList = SQLUtils.parseStatements(sql, JdbcUtils.MYSQL);
+
+			for (Iterator iterator = stmtList.iterator(); iterator.hasNext();) {
+				SQLSelectStatement stmt = (SQLSelectStatement) iterator.next();
+
+				StringBuilder strbuilder = new StringBuilder();
+				// MapReduceOutputVisitor visitor = new
+				// MapReduceOutputVisitor(strbuilder);
+				MySqlOutputVisitor visitor = new MySqlOutputVisitor(strbuilder);
+				stmt.accept(visitor);
+				System.out.println(strbuilder.toString());
+			}
 		}
 
+		{
+			sql = StringTemplateUtils.read_stat("test_select_3");
+
+			List<SQLStatement> stmtList = null;
+
+			stmtList = SQLUtils.parseStatements(sql, JdbcUtils.MYSQL);
+
+			for (Iterator iterator = stmtList.iterator(); iterator.hasNext();) {
+				SQLSelectStatement stmt = (SQLSelectStatement) iterator.next();
+
+				StringBuilder strbuilder = new StringBuilder();
+				// MapReduceOutputVisitor visitor = new
+				// MapReduceOutputVisitor(strbuilder);
+				MySqlOutputVisitor visitor = new MySqlOutputVisitor(strbuilder);
+				stmt.accept(visitor);
+				System.out.println(strbuilder.toString());
+			}
+		}
 	}
 
 	public static void test_enum() {
@@ -176,12 +214,10 @@ public class TestHdb {
 				String pack = name.substring(0, lastindex).toLowerCase();
 				String clsname = name.substring(lastindex + 1).toLowerCase();
 
-				if (clsname.contains("sqlserver") || clsname.contains("postgresql") || clsname.contains("pg")
-						|| clsname.contains("transactsql") || clsname.contains("oracle") || clsname.contains("odps")
-						|| clsname.contains("db2")) {
+				if (clsname.contains("sqlserver") || clsname.contains("postgresql") || clsname.contains("pg") || clsname.contains("transactsql") || clsname.contains("oracle")
+						|| clsname.contains("odps") || clsname.contains("db2")) {
 
-				} else if (pack.contains("sqlserver") || pack.contains("postgresql") || pack.contains("pg")
-						|| pack.contains("transactsql") || pack.contains("oracle") || pack.contains("odps")
+				} else if (pack.contains("sqlserver") || pack.contains("postgresql") || pack.contains("pg") || pack.contains("transactsql") || pack.contains("oracle") || pack.contains("odps")
 						|| pack.contains("db2")) {
 
 				} else {
